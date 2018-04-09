@@ -10,6 +10,7 @@ class Field(object):
     def __init__(self, name, column_type):
         self.name = name
         self.column_type = column_type
+        #print('%s,%s' % (name,column_type))
 
     def __str__(self):
         return '<%s:%s>' % (self.__class__.__name__, self.name)
@@ -17,6 +18,7 @@ class Field(object):
 #在field基础上，定义各种类型的field,比如：stringfield,intfield
 class StringField(Field):
     def __init__(self, name):
+        print('%s' % name)
         super(StringField, self).__init__(name, 'varchar(100)')
 
 class IntegerField(Field):
@@ -29,7 +31,7 @@ class ModelMetaclass(type):
     def __new__(cls, name, bases, attrs):
         if name=='Model':
             return type.__new__(cls, name, bases, attrs)
-        print('Found model: %s' % name)
+        print('Found model: %s ,%s' % (cls, name))
         mappings = dict()
         for k ,v in attrs.items():
             if isinstance(v, Field):
@@ -40,6 +42,7 @@ class ModelMetaclass(type):
             attrs.pop(k)
         attrs['__mappings__'] = mappings #保存属性和列的映射关系
         attrs['__table__'] = name #假设表名和类名一致
+        print('%s' % mappings)
         return type.__new__(cls, name, bases, attrs)
 
 
@@ -48,7 +51,7 @@ class ModelMetaclass(type):
 class Model(dict, metaclass=ModelMetaclass):
     def __init__(self, **kw):
         super(Model, self).__init__(**kw)
-
+        print('self : %s' % self)
     def __getattr__(self, key):
         try:
             return self[key]
